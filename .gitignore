@@ -1,8 +1,6 @@
-*__pycache__
-data
-*.swp
-*.swo
-*.swm
-*.swn
-*.pyc
-*.npz
+.idea
+*.png
+*.csv
+node_modules
+model_epoch_190
+
