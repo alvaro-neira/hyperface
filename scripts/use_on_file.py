@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import chainer
 
@@ -13,7 +11,6 @@ import drawing
 import log_initializer
 import models
 
-import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.cbook as cbook
