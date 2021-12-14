@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import chainer
 
 import argparse
@@ -9,18 +6,20 @@ import os
 import numpy as np
 
 import config
-import drawing
+from drawing import draw_pose, draw_gender, draw_detection, draw_landmark
 import log_initializer
 import models
 
 # logging
 from logging import getLogger, DEBUG
+
 log_initializer.setFmt()
 log_initializer.setRootLevel(DEBUG)
 logger = getLogger(__name__)
 
 # Disable type check in chainer
 os.environ["CHAINER_TYPE_CHECK"] = "0"
+
 
 def _cvt_variable(v):
     # Convert from chainer variable
@@ -78,7 +77,7 @@ if __name__ == '__main__':
 
     # Create single batch
     imgs = xp.asarray([img])
-    x = chainer.Variable(imgs, volatile=True)
+    x = chainer.Variable(imgs) #, volatile=True)
 
     # Forward
     logger.info('Forward the network')
@@ -107,11 +106,11 @@ if __name__ == '__main__':
     gender = (gender > 0.5)
 
     # Draw results
-    drawing.draw_detection(img, detection)
+    draw_detection(img, detection)
     landmark_color = (0, 1, 0) if detection == 1 else (0, 0, 1)
-    drawing.draw_landmark(img, landmark, visibility, landmark_color, 0.5)
-    drawing.draw_pose(img, pose)
-    drawing.draw_gender(img, gender)
+    draw_landmark(img, landmark, visibility, landmark_color, 0.5)
+    draw_pose(img, pose)
+    draw_gender(img, gender)
 
     # Show image
     logger.info('Show the result image')
