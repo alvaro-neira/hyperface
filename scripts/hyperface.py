@@ -12,6 +12,7 @@ import models
 
 # logging
 from logging import getLogger, NullHandler
+
 logger = getLogger(__name__)
 logger.addHandler(NullHandler())
 
@@ -77,7 +78,6 @@ def _proposal_region(pts, pts_mask, img_rect, landmark_pad_rate=0.1):
     if masked_pts.shape[0] < 4 or masked_tpl_pts.shape[0] < 4:
         return (0, 0, 0, 0)
 
-
     # Homography matrix
     H, _ = cv2.findHomography(masked_tpl_pts, masked_pts, method=cv2.RANSAC)
     if H is None:
@@ -125,7 +125,7 @@ class HyperFace(object):
         logger.info('Define a HyperFace model using {}'.format(model_path))
         model = models.HyperFaceModel()
         chainer.serializers.load_npz(model_path, model)
-        model.train = False
+        # model.train = False
         model.report = False
         model.backward = False
 
@@ -172,8 +172,8 @@ class HyperFace(object):
             ssrects = new_ssrects
 
         # [DEBUG] Draw IRP rectabgles
-#         for rect in ssrects:
-#             drawing._draw_rect(img, rect, (0, 1, 0))
+        #         for rect in ssrects:
+        #             drawing._draw_rect(img, rect, (0, 1, 0))
 
         # Extract detected entries
         valid_idxs = [i for i, det in enumerate(detections) if det > 0.5]
@@ -196,8 +196,8 @@ class HyperFace(object):
             # Register overlapped indices
             best_rect = precise_rects[best_rect_idx]
 
-#             # [DEBUG] Draw L-NMS rectabgles
-#             drawing._draw_rect(img, best_rect, (0, 1, 0))
+            #             # [DEBUG] Draw L-NMS rectabgles
+            #             drawing._draw_rect(img, best_rect, (0, 1, 0))
 
             removal_scorebase_idxs = list()
             for s_i, i in enumerate(scorebase_idxs):

@@ -13,14 +13,23 @@ import drawing
 import log_initializer
 import models
 
+import numpy as np
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+import matplotlib.cbook as cbook
+from matplotlib.path import Path
+from matplotlib.patches import PathPatch
+
 # logging
 from logging import getLogger, DEBUG
+
 log_initializer.setFmt()
 log_initializer.setRootLevel(DEBUG)
 logger = getLogger(__name__)
 
 # Disable type check in chainer
 os.environ["CHAINER_TYPE_CHECK"] = "0"
+
 
 def _cvt_variable(v):
     # Convert from chainer variable
@@ -48,7 +57,7 @@ if __name__ == '__main__':
     # Define a model
     logger.info('Define a HyperFace model')
     model = models.HyperFaceModel()
-    model.train = False
+    # model.train = False
     model.report = False
     model.backward = False
 
@@ -78,11 +87,21 @@ if __name__ == '__main__':
 
     # Create single batch
     imgs = xp.asarray([img])
-    x = chainer.Variable(imgs, volatile=True)
+    # x=[get_matrix(y) for y in nn.forward(Variable(imgs))]
+    # x = chainer.Variable(imgs, volatile=True)
+    # chainer.using_config(x, imgs, config=chainer.config)
+    # x = chainer.Variable(imgs([1,], np.float32))
+    # with chainer.no_backprop_mode():
+    #    y = x + 1
+    # y.backward()
+    # x.grad is None  #True
 
     # Forward
+    chainer.config.enable_backprop
+    x = imgs
     logger.info('Forward the network')
-    y = model(x)
+    with chainer.using_config('train', False):
+        y = model(x)
 
     # Chainer.Variable -> np.ndarray
     imgs = _cvt_variable(y['img'])
@@ -115,5 +134,18 @@ if __name__ == '__main__':
 
     # Show image
     logger.info('Show the result image')
-    cv2.imshow('result', img)
-    cv2.waitKey(0)
+    # print(img)
+    # plt.pyplot.imshow(img)
+
+    f = plt.figure(figsize=[12, 12])
+    plt.imshow(img, interpolation='none', vmin=0, vmax=1)
+
+    plt.axis('image')
+    plt.xticks([])
+    plt.yticks([])
+    plt.savefig("hola2.png", format='png', bbox_inches='tight')
+    plt.close(f)
+
+    # cv2.imshow('result', img)
+
+    # cv2.waitKey(0)
