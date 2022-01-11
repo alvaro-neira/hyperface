@@ -60,20 +60,15 @@ def short_hyperface(config_path, img_path, model_path):
     y = model(x)
 
     # Chainer.Variable -> np.ndarray
-    imgs = _cvt_variable(y['img'])
+    detection = _cvt_variable(y['detection'])
     genders = _cvt_variable(y['gender'])
 
-    # Use first data in one batch
-    img = imgs[0]
     gender = genders[0]
 
-    img = np.transpose(img, (1, 2, 0))
-    img = img.copy()
-    img += 0.5  # [-0.5:0.5] -> [0:1]
     if gender > 0.5:
-        return 'Female'
+        return f"Female, detection={detection}"
     else:
-        return 'Male'
+        return f"Male, detection={detection}"
 
 
 print(short_hyperface('/Users/aneira/noticias/hyperface/config.json',
