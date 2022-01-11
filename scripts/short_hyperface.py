@@ -1,6 +1,5 @@
 import chainer
 
-import argparse
 import cv2
 import os
 import numpy as np
@@ -22,17 +21,9 @@ def _cvt_variable(v):
     return v
 
 
-def short_hyperface():
-    # Argument
-    parser = argparse.ArgumentParser(description='HyperFace training script')
-    parser.add_argument('--config', '-c', default='config.json',
-                        help='Load config from given json file')
-    parser.add_argument('--model', required=True, help='Trained model path')
-    parser.add_argument('--img', required=True, help='Input image path')
-    args = parser.parse_args()
-
+def short_hyperface(config_path, img_path, model_path):
     # Load config
-    config.load(args.config)
+    config.load(config_path)
 
     # Define a model
     model = models.HyperFaceModel()
@@ -41,7 +32,7 @@ def short_hyperface():
     model.backward = False
 
     # Initialize model
-    chainer.serializers.load_npz(args.model, model)
+    chainer.serializers.load_npz(model_path, model)
 
     # Setup GPU
     if config.gpu >= 0:
@@ -53,7 +44,7 @@ def short_hyperface():
         xp = np
 
     # Load image file
-    img = cv2.imread(args.img)
+    img = cv2.imread(img_path)
     if img is None or img.size == 0 or img.shape[0] == 0 or img.shape[1] == 0:
         exit()
     img = img.astype(np.float32) / 255.0  # [0:1]
@@ -79,11 +70,12 @@ def short_hyperface():
     img = np.transpose(img, (1, 2, 0))
     img = img.copy()
     img += 0.5  # [-0.5:0.5] -> [0:1]
-    return gender > 0.5
+    if gender > 0.5:
+        return 'Female'
+    else:
+        return 'Male'
 
 
-ans = short_hyperface()
-if ans:
-    print('Female')
-else:
-    print('Male')
+print(short_hyperface('/Users/aneira/noticias/hyperface/config.json',
+                      '/Users/aneira/noticias/hyperface/sample_images/lena_face.png',
+                      '/Users/aneira/noticias/hyperface/model_epoch_190'))
