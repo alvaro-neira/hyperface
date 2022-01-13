@@ -8,3 +8,5 @@ data
 *.npz
 .idea
 model_epoch_190
+.DS_Store
+

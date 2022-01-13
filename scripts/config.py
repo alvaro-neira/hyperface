@@ -8,9 +8,9 @@ logger.addHandler(NullHandler())
 
 
 def load(filename):
-    ''' Load configure json file
+    """ Load configure json file
     Loaded variables will be stored in config's globals
-    '''
+    """
     logger.info('Load config from "{}"'.format(filename))
     f = open(filename)
     data = json.load(f)
