@@ -6,18 +6,12 @@ import numpy as np
 
 import config
 from drawing import draw_pose, draw_gender, draw_detection, draw_landmark
-import log_initializer
 import models
-
-# logging
-from logging import getLogger, DEBUG
-
-log_initializer.setFmt()
-log_initializer.setRootLevel(DEBUG)
-logger = getLogger(__name__)
 
 # Disable type check in chainer
 os.environ["CHAINER_TYPE_CHECK"] = "0"
+pre_trained = '/Users/aneira/hyperface/model_epoch_190'
+config_path = '/Users/aneira/hyperface/config.json'
 
 
 def _cvt_variable(v):
@@ -29,25 +23,24 @@ def _cvt_variable(v):
     return v
 
 
-def frame_detect(frame):
+def frame_detect(img):
     # Load config
-    config.load('config.json')
+    config.load(config_path)
 
     # Define a model
-    logger.info('Define a HyperFace model')
     model = models.HyperFaceModel()
     model.train = False
     model.report = False
     model.backward = False
 
     # Initialize model
-    chainer.serializers.load_npz('/content/drive/MyDrive/ai/model_epoch_190', model)
+    chainer.serializers.load_npz(pre_trained, model)
 
     xp = np
 
-    if frame is None or frame.size == 0 or frame.shape[0] == 0 or frame.shape[1] == 0:
-        logger.error('Failed to load')
+    if img is None or img.size == 0 or img.shape[0] == 0 or img.shape[1] == 0:
         exit()
+    frame = img.copy()
     frame = frame.astype(np.float32) / 255.0  # [0:1]
     frame = cv2.resize(frame, models.IMG_SIZE)
     frame = cv2.normalize(frame, None, -0.5, 0.5, cv2.NORM_MINMAX)
@@ -57,15 +50,13 @@ def frame_detect(frame):
     imgs = xp.asarray([frame])
     x = chainer.Variable(imgs)  # , volatile=True)
 
-    # Forward
-    logger.info('Forward the network')
     y = model(x)
 
     # Chainer.Variable -> np.ndarray
     imgs = _cvt_variable(y['img'])
     detections = _cvt_variable(y['detection'])
     landmarks = _cvt_variable(y['landmark'])
-    visibilitys = _cvt_variable(y['visibility'])
+    visibilities = _cvt_variable(y['visibility'])
     poses = _cvt_variable(y['pose'])
     genders = _cvt_variable(y['gender'])
 
@@ -73,7 +64,7 @@ def frame_detect(frame):
     frame = imgs[0]
     detection = detections[0]
     landmark = landmarks[0]
-    visibility = visibilitys[0]
+    visibility = visibilities[0]
     pose = poses[0]
     gender = genders[0]
 
@@ -90,10 +81,11 @@ def frame_detect(frame):
     draw_pose(frame, pose)
     draw_gender(frame, gender)
 
-    # Show image
-    logger.info('Show the result image')
-    cv2.imshow('result', frame)
+    return 255 * frame
+
+
+def test():
+    lena = frame_detect(cv2.imread('/Users/aneira/hyperface/sample_images/lena_face.png'))
+    cv2.imshow('result', lena / 255)
     cv2.waitKey(0)
-
-
-frame_detect(cv2.imread('sample_images/lena_face.png'))
+    cv2.imwrite('/Users/aneira/hyperface/sample_images/lena_face_result3.png', lena, [cv2.IMWRITE_PNG_COMPRESSION, 0])

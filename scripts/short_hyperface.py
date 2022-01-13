@@ -73,4 +73,4 @@ def short_hyperface(config_path, img_path, model_path):
 
 print(short_hyperface('/Users/aneira/noticias/hyperface/config.json',
                       '/Users/aneira/noticias/hyperface/sample_images/lena_face.png',
-                      '/Users/aneira/noticias/hyperface/model_epoch_190'))
+                      '/Users/aneira/hyperface/model_epoch_190'))
