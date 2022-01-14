@@ -78,6 +78,22 @@ def draw_detection(img, detection, size=15):
         _draw_cross(img, pt, (0, 0, 0.7), size, 5)
 
 
+def draw_detection_in_orig(detection, final_scene, face_box, scale):
+    # Upper left
+
+    x1 = face_box[0]
+    y1 = face_box[1]
+    x2 = face_box[2]
+    y2 = face_box[3]
+    radius = round(30 * scale)
+    sep = 5
+    pt = (x1 + radius + round(sep * scale), y1 + round(70 * scale) - radius + round(sep * scale))
+    if detection:
+        _draw_circle(final_scene, pt, (0, 179, 0), radius, round(10 * scale))
+    else:
+        _draw_cross(final_scene, pt, (0, 0, 179), radius, round(10 * scale))
+
+
 def draw_landmark(img, landmark, visibility, color, line_color_scale,
                   denormalize_scale=True):
     """  Draw AFLW 21 points landmark
@@ -149,7 +165,7 @@ def draw_pose(img, pose, size=30, idx=0):
     _draw_line(img, org_pt, org_pt + xvec * size, (0, 0, 1), 3)
 
 
-def draw_gender(img, gender, final_scene, face_box):
+def draw_gender(gender, final_scene, face_box, scale):
     if gender:
         letter = 'F'
     else:
@@ -163,10 +179,9 @@ def draw_gender(img, gender, final_scene, face_box):
     y2 = face_box[3]
     height = y2 - y1
     width = x2 - x1
-    scale = 2 * width / total_width
-    cv2.putText(final_scene, letter, (x2 - round(70 * scale), y1 + round(70 * scale)),
-                cv2.FONT_HERSHEY_SIMPLEX, 2 * scale,
-                (255, 0, 0), round(4 * scale), cv2.LINE_AA)
+    cv2.putText(final_scene, letter, (x2 - round(90 * scale), y1 + round(90 * scale)),
+                cv2.FONT_HERSHEY_SIMPLEX, 3 * scale,
+                (255, 0, 0), round(8 * scale), cv2.LINE_AA)
 
 
 def draw_gender_circle(img, gender, size=7, idx=0):
