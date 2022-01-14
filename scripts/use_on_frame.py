@@ -80,7 +80,8 @@ def frame_detect(img):
     draw_landmark(frame, landmark, visibility, landmark_color, 0.5)
     draw_pose(frame, pose)
     draw_gender(frame, gender)
-    return 255 * cv2.resize(frame, (640, 360), interpolation=cv2.INTER_AREA)
+    # return 255 * cv2.resize(frame, (640, 360), interpolation=cv2.INTER_AREA)
+    return 255 * frame
 
 
 def test():

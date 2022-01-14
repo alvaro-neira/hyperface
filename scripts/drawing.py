@@ -5,12 +5,14 @@ import math
 
 # logging
 from logging import getLogger, NullHandler
+
 logger = getLogger(__name__)
 logger.addHandler(NullHandler())
 
 # matplotlib
 try:
     import matplotlib
+
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     import matplotlib.backends.backend_agg as agg
@@ -109,7 +111,7 @@ def draw_landmark(img, landmark, visibility, color, line_color_scale,
 
     if landmark.ndim == 1:
         landmark = landmark.reshape(int(landmark.shape[-1] / 2), 2)
-    assert(landmark.shape[0] == 21 and visibility.shape[0] == 21)
+    assert (landmark.shape[0] == 21 and visibility.shape[0] == 21)
 
     if denormalize_scale:
         h, w = img.shape[0:2]
@@ -147,7 +149,18 @@ def draw_pose(img, pose, size=30, idx=0):
     _draw_line(img, org_pt, org_pt + xvec * size, (0, 0, 1), 3)
 
 
-def draw_gender(img, gender, size=7, idx=0):
+def draw_gender(img, gender):
+    if gender == 0:
+        letter = 'M'
+    elif gender == 1:
+        letter = 'F'
+    height = img.shape[0]
+    width = img.shape[1]
+    cv2.putText(img, letter, (width-35, 35), cv2.FONT_HERSHEY_SIMPLEX, 1.5,
+                (255, 0, 0), 4, cv2.LINE_AA)
+
+
+def draw_gender_circle(img, gender, size=7, idx=0):
     # Upper right
     pt = (img.shape[1] - (size + 5) * (2 * idx + 1), size + 5)
     if gender == 0:
