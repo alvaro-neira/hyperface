@@ -5,11 +5,13 @@ import os
 import numpy as np
 
 import config
-# from drawingmod import draw_pose, draw_gender, draw_detection, draw_landmark
+from drawing import draw_pose, draw_gender, draw_detection, draw_landmark
 import models
 
 # Disable type check in chainer
 os.environ["CHAINER_TYPE_CHECK"] = "0"
+pre_trained = '/Users/aneira/hyperface/model_epoch_190'
+config_path = '/Users/aneira/hyperface/config.json'
 
 
 def _cvt_variable(v):
@@ -23,7 +25,7 @@ def _cvt_variable(v):
 
 def frame_detect(img):
     # Load config
-    config.load('/Users/aneira/hyperface/config.json')
+    config.load(config_path)
 
     # Define a model
     model = models.HyperFaceModel()
@@ -32,7 +34,7 @@ def frame_detect(img):
     model.backward = False
 
     # Initialize model
-    chainer.serializers.load_npz('/Users/aneira/hyperface/model_epoch_190', model)
+    chainer.serializers.load_npz(pre_trained, model)
 
     xp = np
 
@@ -73,13 +75,12 @@ def frame_detect(img):
     gender = (gender > 0.5)
 
     # Draw results
-    # draw_detection(frame, detection)
+    draw_detection(frame, detection)
     landmark_color = (0, 1, 0) if detection == 1 else (0, 0, 1)
-    # draw_landmark(frame, landmark, visibility, landmark_color, 0.5)
-    # draw_pose(frame, pose)
-    # draw_gender(frame, gender)
-
-    return 255 * frame
+    draw_landmark(frame, landmark, visibility, landmark_color, 0.5)
+    draw_pose(frame, pose)
+    draw_gender(frame, gender)
+    return 255 * cv2.resize(frame, (640, 360), interpolation=cv2.INTER_AREA)
 
 
 def test():
